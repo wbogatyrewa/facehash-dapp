@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
   <script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+  <script src="js/html5-qrcode.min.js"></script>
   <script type="module" src="js/index.js"></script>
 </head>
 <body>
@@ -29,11 +30,9 @@
       </div>
       <ul class="section-hero__list">
         <li class="section-hero__item">
-          <button class="button section-hero__button section-hero__item-button_scan-qr" id="section-hero__item-button_scan-qr">
-            SCAN QR
-          </button>
-          <div id="html_contents" data-new-window>
-            <video controls style="width: 100%; height: auto;"></video>
+          <h3 class="section-hero__item-heading_scan-qr">SCAN QR</h3>
+          <div class="row">
+            <div class="section-hero__reader" id="reader"></div>
           </div>
           <div class="section-hero__item-content">
             <input type="text" id="section-hero__item-input_address" class="input section-hero__item-input section-hero__item-input_address" placeholder="Enter recipient wallet address">

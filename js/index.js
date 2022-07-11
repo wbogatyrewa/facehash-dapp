@@ -2,17 +2,28 @@ import { contractAddress, abi } from "../js/constants.js";
 
 const connectButton = document.getElementById("section-hero__button_connect");
 const showAllNFTButton = document.getElementById("section-hero__button_show-all-nft");
-const scanQRButton = document.getElementById("section-hero__item-button_scan-qr");
 const sendButton = document.getElementById("section-hero__item-button_send");
 const showOwnerButton = document.getElementById("section-hero__item-button_show-owner");
 const burnNFTButton = document.getElementById("section-hero__item-button_burn-nft");
 
 connectButton.onclick = connect;
 showAllNFTButton.onclick = showAllNFT;
-scanQRButton.onclick = scanQR;
 sendButton.onclick = send;
 showOwnerButton.onclick = showOwner;
 burnNFTButton.onclick = burnNFT;
+
+function onScanSuccess(qrCodeMessage) {
+  let recipientAddressInput = document.getElementById("section-hero__item-input_address");
+  recipientAddressInput.value = qrCodeMessage.split(":").pop()
+}
+
+function onScanError(errorMessage) {
+  console.log(errorMessage);
+}
+
+var html5QrcodeScanner = new Html5QrcodeScanner(
+  "reader", { fps: 10, qrbox: 250 });
+html5QrcodeScanner.render(onScanSuccess, onScanError);
 
 async function getAccounts() {
   try {
@@ -58,27 +69,19 @@ async function showAllNFT() {
     window.contract = await new web3.eth.Contract(abi, contractAddress);
     try {
       let tokenIds = await getTokenIdsByTrueOwner();
-      tokenIds.forEach(async tokenId => {
+      if (tokenIds.length !== 0) {
+        tokenIds.forEach(async tokenId => {
         let owner = await getOwner(Number(tokenId));
         allNFTOutput.innerHTML += tokenId + ": " + owner + "<br/>";
-      })
+        })
+      } else {
+        allNFTOutput.innerHTML = "NFT doesn't exist";
+      }
     } catch (error) {
       console.log(error);
       allNFTOutput.innerHTML = "ERROR! NFTs doesn't exist";
     }
   }
-}
-
-async function scanQR() {
-  let recipientAddressInput = document.getElementById("section-hero__item-input_address");
-  
-
-  // var new_window;
-  // new_window = window.open('', '_blank');
-  // var html_contents = document.getElementById("html_contents");
-  // if(html_contents !== null) {
-  //     new_window.document.write('<!doctype html><html><head><title>SCAN QR</title><meta charset="UTF-8" /></head><body>' + html_contents.innerHTML + '</body></html>');
-  // }
 }
 
 async function send() {
