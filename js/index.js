@@ -3,12 +3,14 @@ import { contractAddress, abi } from "../js/constants.js";
 const connectButton = document.getElementById("section-hero__button_connect");
 const showAllNFTButton = document.getElementById("section-hero__button_show-all-nft");
 const sendButton = document.getElementById("section-hero__item-button_send");
+const createBiometricsButton = document.getElementById("section-hero__item-button_create-biom");
 const showOwnerButton = document.getElementById("section-hero__item-button_show-owner");
 const burnNFTButton = document.getElementById("section-hero__item-button_burn-nft");
 
 connectButton.onclick = connect;
 showAllNFTButton.onclick = showAllNFT;
 sendButton.onclick = send;
+createBiometricsButton.onclick = createBiometrics;
 showOwnerButton.onclick = showOwner;
 burnNFTButton.onclick = burnNFT;
 
@@ -112,6 +114,32 @@ async function send() {
       sendOutput.innerHTML = "NFT has sent";
     } catch (error) {
       sendOutput.innerHTML = "ERROR! NFT can't be sent";
+    }
+  }
+}
+
+async function createBiometrics() {
+  let biomInput = document.getElementById("section-hero__item-input_biom");
+  let createOutput = document.getElementById("section-hero__out-create");
+  if (typeof window.ethereum !== "undefined") {
+    var web3 = new Web3(Web3.givenProvider);
+    window.contract = await new web3.eth.Contract(abi, contractAddress);
+    const fromAddress = (await getAccounts())[0];
+    const transactionParameters = {
+      to: contractAddress,
+      from: fromAddress,
+      value: '0',
+      data: window.contract.methods.createBiom(biomInput.value).encodeABI(),
+    };
+    try {
+      await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [transactionParameters],
+      });
+      biomInput.value = "";
+      createOutput.innerHTML = "Biometrics created";
+    } catch (error) {
+      sendOutput.innerHTML = "ERROR! Biometrics can't be created";
     }
   }
 }
